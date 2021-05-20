@@ -8,16 +8,27 @@ public class PlayerController : MonoBehaviour
 {
     public CharacterController controller;
 
-    public float speed = 12f;
+    public float speed = 17f;
     public float gravity = -9.81f;
+    public float jumpHeight = 3f;
 
     public Transform groundCheck;
     public float groundDistance = 0.4f;
     public LayerMask groundMask;
-    
+
+    public int maxHealth = 100;
+    public int currentHealth = 100;
+
+    public HealthBar healthBar;
+
     Vector3 velocity;
     bool isGrounded;
 
+    void Start()
+    {
+        currentHealth = maxHealth;
+        healthBar.SetMaxHealth(maxHealth);
+    }
     void Update()
     {
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
@@ -34,10 +45,42 @@ public class PlayerController : MonoBehaviour
 
         controller.Move(move * speed * Time.deltaTime);
 
-        veloctiy.y += gravity * Timeout.deltaTime;
+        if(Input.GetButtonDown("Jump") && isGrounded)
+        {
+            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+         
+        }
 
-        controller.Move(velocity * Timeout.deltaTime);
+        if (Input.GetKey("left shift"))
+        {
+            speed = 30f;
+        }
+        else
+        {
+            speed = 17f;
+        }
+
+        velocity.y += gravity * Time.deltaTime;
+
+        controller.Move(velocity * Time.deltaTime);
+
+        if (Input.GetKeyDown(KeyCode.LeftAlt))
+        {
+            TakeDamage(20);
+        }
+        
+
+
+
 
 
     }
+
+    void TakeDamage(int damage)
+    {
+        currentHealth -= damage;
+
+        healthBar.SetHealth(currentHealth);
+    }
+    
 }
